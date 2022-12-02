@@ -1,3 +1,7 @@
+package day02
+
+import readInput
+
 fun main(){
 
     // just do a hard lookup, since we have 9 values only
@@ -27,17 +31,17 @@ fun main(){
         "C Z" to 7, // 1 + 6
     )
 
+    fun mapToInValueAndSum(input: List<String>, lookupTable: Map<String, Int>) :Int = input.map { lookupTable[it] }.mapNotNull { it }.sum()
 
-    fun part1(input: List<String>): Int = input.map { scores[it] }.mapNotNull { it }.sum()
-
-    fun part2(input: List<String>): Int = input.map { opponentMovesAndOutcomes[it] }.mapNotNull { it }.sum()
+    fun part1(input: List<String>): Int = mapToInValueAndSum(input, scores)
+    fun part2(input: List<String>): Int = mapToInValueAndSum(input, opponentMovesAndOutcomes)
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("day02_test")
+    val testInput = readInput("day02/day02_test")
     check(part1(testInput) == 15)
     check(part2(testInput) == 12)
 
-    val input = readInput("day02_input")
+    val input = readInput("day02/day02_input")
     println(part1(input))
     println(part2(input))
 }

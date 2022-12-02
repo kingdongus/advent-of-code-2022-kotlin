@@ -1,3 +1,7 @@
+package day01
+
+import readInput
+
 fun main() {
     fun part1(input: List<String>): Int {
         var partialSum = 0
@@ -29,11 +33,11 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("day01_test")
+    val testInput = readInput("day01/day01_test")
     check(part1(testInput) == 24000)
     check(part2(testInput) == 45000)
 
-    val input = readInput("day01_input")
+    val input = readInput("day01/day01_input")
     println(part1(input))
     println(part2(input))
 }
