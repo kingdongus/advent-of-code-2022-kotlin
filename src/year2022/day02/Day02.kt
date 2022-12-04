@@ -1,8 +1,8 @@
-package day02
+package year2022.day02
 
-import readInput
+import readTestFileByYearAndDay
 
-fun main(){
+fun main() {
 
     // just do a hard lookup, since we have 9 values only
     // 1 / 2 / 3 + 0 / 3 / 6
@@ -31,17 +31,18 @@ fun main(){
         "C Z" to 7, // 1 + 6
     )
 
-    fun mapToInValueAndSum(input: List<String>, lookupTable: Map<String, Int>) :Int = input.map { lookupTable[it] }.mapNotNull { it }.sum()
+    fun mapToInValueAndSum(input: List<String>, lookupTable: Map<String, Int>): Int =
+        input.map { lookupTable[it] }.mapNotNull { it }.sum()
 
     fun part1(input: List<String>): Int = mapToInValueAndSum(input, scores)
     fun part2(input: List<String>): Int = mapToInValueAndSum(input, opponentMovesAndOutcomes)
 
-    // test if implementation meets criteria from the description, like:
-    val testInput = readInput("day02/day02_test")
+
+    val testInput = readTestFileByYearAndDay(2022, 2)
     check(part1(testInput) == 15)
     check(part2(testInput) == 12)
 
-    val input = readInput("day02/day02_input")
+    val input = readTestFileByYearAndDay(2022, 2)
     println(part1(input))
     println(part2(input))
 }

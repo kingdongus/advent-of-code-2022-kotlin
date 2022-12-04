@@ -1,6 +1,7 @@
-package day01
+package year2022.day01
 
-import readInput
+import readInputFileByYearAndDay
+import readTestFileByYearAndDay
 
 fun main() {
     fun part1(input: List<String>): Int {
@@ -23,8 +24,7 @@ fun main() {
             if (it.isBlank()) {
                 partialSums += partialSum
                 partialSum = 0
-            }
-            else partialSum += it.toInt()
+            } else partialSum += it.toInt()
         }
         // dangling element
         partialSums += partialSum
@@ -32,12 +32,11 @@ fun main() {
         return partialSums.sorted().reversed().take(3).sum()
     }
 
-    // test if implementation meets criteria from the description, like:
-    val testInput = readInput("day01/day01_test")
+    val testInput = readTestFileByYearAndDay(2022, 1)
     check(part1(testInput) == 24000)
     check(part2(testInput) == 45000)
 
-    val input = readInput("day01/day01_input")
+    val input = readInputFileByYearAndDay(2022, 1)
     println(part1(input))
     println(part2(input))
 }
