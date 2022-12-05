@@ -10,30 +10,30 @@ fun main() {
         val delimiter = input.takeWhile { it.isNotBlank() }.size
         val numStacks = input.getOrElse(delimiter - 1) { "" }.split(" ").last().toInt()
 
-        val workspace: Array<String> = Array(numStacks) { "" } // we treat piles of crates as single strings
+        val piles: Array<String> = Array(numStacks) { "" } // we treat piles of crates as single strings
         input.take(delimiter - 1) // excludes numberings
             .map { it.chunked(4) }
             .forEach {
                 it.forEachIndexed { index, s ->
-                    if (s.isNotBlank()) workspace[index] = workspace[index] + s[1]
+                    if (s.isNotBlank()) piles[index] = piles[index] + s[1]
                 }
             }
 
-        input.drop(delimiter + 1).map {
-            Regex("[0-9]+").findAll(it)
-                .map(MatchResult::value)
-                .toList()
-        }.forEach {
-            val count = it[0].toInt()
-            val from = it[1].toInt() - 1
-            val to = it[2].toInt() - 1
+        input.drop(delimiter + 1)
+            .map { Regex("[0-9]+").findAll(it) }
+            .map { it.map { v -> v.value } }
+            .map { it.toList() }
+            .forEach {
+                val count = it[0].toInt()
+                val from = it[1].toInt() - 1
+                val to = it[2].toInt() - 1
 
-            val toMove = if (multipleAtOnce) workspace[from].take(count)
-            else workspace[from].take(count).reversed()  // one-at-a-time reverses the order
-            workspace[from] = workspace[from].drop(count)
-            workspace[to] = toMove + workspace[to]
-        }
-        return workspace
+                val toMove = if (multipleAtOnce) piles[from].take(count)
+                else piles[from].take(count).reversed()  // one-at-a-time reverses the order
+                piles[from] = piles[from].drop(count)
+                piles[to] = toMove + piles[to]
+            }
+        return piles
     }
 
     fun part1(input: List<String>): String {
