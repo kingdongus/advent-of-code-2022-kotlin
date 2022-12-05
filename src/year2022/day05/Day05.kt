@@ -19,6 +19,7 @@ fun main() {
                 }
             }
 
+        // process instructions
         input.drop(delimiter + 1)
             .map { Regex("[0-9]+").findAll(it) }
             .map { it.map { v -> v.value } }
