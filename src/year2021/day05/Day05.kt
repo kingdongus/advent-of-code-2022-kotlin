@@ -38,8 +38,7 @@ fun main() {
             .map { it[0].split(",") to it[1].split(",") }
             .map {
                 Point(it.first[0].toInt(), it.first[1].toInt()) to Point(
-                    it.second[0].toInt(),
-                    it.second[1].toInt()
+                    it.second[0].toInt(), it.second[1].toInt()
                 )
             }
             .filter { lineCondition(it.first, it.second) }
