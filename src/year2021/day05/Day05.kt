@@ -19,15 +19,15 @@ fun main() {
             return if (this isHorizontalTo other) {
                 val minX = min(this.x, other.x)
                 val maxX = max(this.x, other.x)
-                (minX until maxX + 1).map { Point(it, this.y) }.toList()
+                (minX..maxX).map { Point(it, this.y) }.toList()
             } else if (this isVerticalTo other) {
                 val minY = min(this.y, other.y)
                 val maxY = max(this.y, other.y)
-                (minY until maxY + 1).map { Point(this.x, it) }.toList()
+                (minY..maxY).map { Point(this.x, it) }.toList()
             } else if (this isDiagonalTo other) {
                 val dirX = if (this.x > other.x) -1 else 1
                 val dirY = if (this.y > other.y) -1 else 1
-                (0 until abs(this.x - other.x) + 1).map { this.moveBy(it * dirX, it * dirY) }.toList()
+                (0..abs(this.x - other.x)).map { this.moveBy(it * dirX, it * dirY) }.toList()
             } else listOf()
         }
     }
