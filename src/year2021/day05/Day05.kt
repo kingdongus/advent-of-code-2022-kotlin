@@ -13,6 +13,8 @@ fun main() {
         infix fun isVerticalTo(other: Point): Boolean = this.x == other.x
         infix fun isDiagonalTo(other: Point): Boolean = abs(this.x - other.x) == abs(this.y - other.y)
         fun moveBy(x: Int, y: Int): Point = Point(this.x + x, this.y + y)
+
+        // only works for points that are either horizontal or diagonal to each other
         operator fun rangeTo(other: Point): List<Point> {
             return if (this isHorizontalTo other) {
                 val minX = min(this.x, other.x)
