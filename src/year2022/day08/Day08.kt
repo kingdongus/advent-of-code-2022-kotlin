@@ -9,7 +9,7 @@ fun main() {
     fun part1(input: List<String>): Int {
 
         val dimension = input[0].length
-        var visibility = Array(dimension) { Array(dimension) { false } }
+        val visibility = Array(dimension) { Array(dimension) { false } }
 
         // edges always visible
         visibility.indices.forEach {
@@ -64,14 +64,13 @@ fun main() {
                 }
             }
         }
-
         return visibility.flatten().count { it }
     }
 
     fun part2(input: List<String>): Int {
 
         val dimension = input[0].length
-        var scenicScore = Array(dimension) { Array(dimension) { 0 } }
+        val scenicScores = Array(dimension) { Array(dimension) { 0 } }
 
         for (x in 1 until dimension - 1)
             for (y in 1 until dimension - 1) {
@@ -92,10 +91,10 @@ fun main() {
                 val left = 1 + input[x].substring(1, y).reversed().takeWhile { it.digitToInt() < treeHeight }.count()
                 val right = 1 + input[x].substring(y + 1).takeWhile { it.digitToInt() < treeHeight }.count()
 
-                scenicScore[x][y] = top * bottom * left * right
+                scenicScores[x][y] = top * bottom * left * right
             }
 
-        return scenicScore.flatten().max()
+        return scenicScores.flatten().max()
     }
 
     val testInput = readTestFileByYearAndDay(2022, 8)
