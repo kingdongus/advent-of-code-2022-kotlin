@@ -1,5 +1,6 @@
 package year2022.day02
 
+import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 
 fun main() {
@@ -42,7 +43,7 @@ fun main() {
     check(part1(testInput) == 15)
     check(part2(testInput) == 12)
 
-    val input = readTestFileByYearAndDay(2022, 2)
+    val input = readInputFileByYearAndDay(2022, 2)
     println(part1(input))
     println(part2(input))
 }
