@@ -65,7 +65,7 @@ fun main() {
             }
         }
 
-        return visibility.flatten().map { if (it) 1 else 0 }.sum()
+        return visibility.flatten().count { it }
     }
 
     fun part2(input: List<String>): Int {
