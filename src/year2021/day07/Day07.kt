@@ -6,20 +6,43 @@ import kotlin.math.abs
 
 fun main() {
 
-
-    fun part1(input: List<String>): Int {
+    fun minimizeCost(input: List<String>, costFunction: (List<Int>, Int) -> Int): Int {
         val crabPositions = input[0].split(",").map { it.toInt() }
-        return (crabPositions.min()..crabPositions.max())
-            .map { crabPositions.sumOf { p -> abs(it - p) } }
-            .min()
+
+        // start in the middle
+        // binary search adjust the interval to converge towards a minimum
+        var left = crabPositions.min()
+        var right = crabPositions.max()
+        var min = Int.MAX_VALUE
+
+        while (right > left) {
+            val pivot = (left + right) / 2
+            val pivotCost = costFunction(crabPositions, pivot)
+            val costLeft = costFunction(crabPositions, pivot - 1)
+            if (costLeft < pivotCost) {
+                right = pivot - 1
+                min = costLeft
+                continue
+            } else {
+                val costRight = costFunction(crabPositions, pivot + 1)
+                if (costRight < pivotCost) {
+                    left = pivot + 1
+                    min = costRight
+                    continue
+                }
+            }
+            return pivotCost
+        }
+
+        return min
     }
 
+    fun part1(input: List<String>): Int = minimizeCost(input) { crabPositions, targetPosition ->
+        crabPositions.sumOf { abs(it - targetPosition) }
+    }
 
-    fun part2(input: List<String>): Int {
-        val crabPositions = input[0].split(",").map { it.toInt() }
-        return (crabPositions.min()..crabPositions.max())
-            .map { crabPositions.sumOf { p -> (0..abs(it - p)).sum() } }
-            .min()
+    fun part2(input: List<String>): Int = minimizeCost(input) { crabPositions, targetPosition ->
+        crabPositions.sumOf { (0..abs(targetPosition - it)).sum() }
     }
 
     val testInput = readTestFileByYearAndDay(2021, 7)
