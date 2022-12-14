@@ -1,36 +1,10 @@
 package year2021.day05
 
+import Point
 import readInputFileByYearAndDay
 import readTestFileByYearAndDay
-import java.lang.Integer.max
-import java.lang.Integer.min
-import kotlin.math.abs
 
 fun main() {
-
-    data class Point(val x: Int, val y: Int) {
-        infix fun isHorizontalTo(other: Point): Boolean = this.y == other.y
-        infix fun isVerticalTo(other: Point): Boolean = this.x == other.x
-        infix fun isDiagonalTo(other: Point): Boolean = abs(this.x - other.x) == abs(this.y - other.y)
-        fun moveBy(x: Int, y: Int): Point = Point(this.x + x, this.y + y)
-
-        // only works for points that are either horizontal or diagonal to each other
-        operator fun rangeTo(other: Point): List<Point> {
-            return if (this isHorizontalTo other) {
-                val minX = min(this.x, other.x)
-                val maxX = max(this.x, other.x)
-                (minX..maxX).map { Point(it, this.y) }.toList()
-            } else if (this isVerticalTo other) {
-                val minY = min(this.y, other.y)
-                val maxY = max(this.y, other.y)
-                (minY..maxY).map { Point(this.x, it) }.toList()
-            } else if (this isDiagonalTo other) {
-                val dirX = if (this.x > other.x) -1 else 1
-                val dirY = if (this.y > other.y) -1 else 1
-                (0..abs(this.x - other.x)).map { this.moveBy(it * dirX, it * dirY) }.toList()
-            } else listOf()
-        }
-    }
 
     fun countOverlappingPoints(input: List<String>, lineCondition: (Point, Point) -> Boolean): Int =
         input.asSequence()
