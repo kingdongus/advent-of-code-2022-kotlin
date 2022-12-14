@@ -8,6 +8,7 @@ import kotlin.math.min
 
 class Cave(val dimension: Point) {
 
+    // we go cheap and model the field as characters, similar to the visualization on the page
     var fieldState: Array<CharArray> = arrayOf(CharArray(1) { '.' })
     var leftEdge = Int.MAX_VALUE
     var rightEdge = -1
@@ -18,6 +19,7 @@ class Cave(val dimension: Point) {
     }
 
     fun addRocks(locations: List<Point>) {
+        // very brittle code, does no checks against the dimensions
         locations.forEach { fieldState[it.y][it.x] = '#' }
         rightEdge = max(rightEdge, locations.maxOf { it.x })
         leftEdge = min(leftEdge, locations.minOf { it.y })
@@ -27,7 +29,7 @@ class Cave(val dimension: Point) {
     private fun isOutOfBounds(position: Point) =
         position.y < leftEdge || position.y > rightEdge || position.x > bottomEdge
 
-    // true if sand was placed, false if it fell into the void
+    // true if sand was placed, false if it fell into the void OR would block the spawn
     fun addSand(): Boolean {
         var position = spawnPoint
         while (true) {
@@ -35,7 +37,7 @@ class Cave(val dimension: Point) {
             if (isOutOfBounds(next)) return false
             if (spawnPoint == next) return false
             if (position == next) {
-                fieldState[next.x][next.y] = 's'
+                fieldState[next.x][next.y] = 'o'
                 return true
             }
             position = next
@@ -52,8 +54,6 @@ class Cave(val dimension: Point) {
         }
         return sand
     }
-
-    fun print() = fieldState.forEach { println(it) }
 
     companion object {
         val spawnPoint = Point(0, 500)
@@ -85,21 +85,19 @@ fun main() {
     fun part2(input: List<String>): Int {
         val rockLocations = parseRockLocations(input).toMutableList()
         val depthFromReadings = rockLocations.maxOf { it.y }
-        // we are using an approximation that is pretty close to infinity ;)
+        // we manually add another layer of rocks slightly lower than whatever the reading tells us
+        // when the description says "infinite in both directions", it really meant the range 0..9999
         rockLocations.addAll((0 until 1000).map { Point(it, depthFromReadings + 2) })
-
         val cave = Cave(dimension = Point(rockLocations.maxOf { it.x } + 1, rockLocations.maxOf { it.y } + 1))
         cave.addRocks(rockLocations)
         var maxSand = 0
         while (cave.addSand()) maxSand++
-        return maxSand + 1
+        return maxSand + 1 // +1 since the code will not allow us to block the sand spawn point
     }
 
     val testInput = readTestFileByYearAndDay(2022, 14)
-//    part1(testInput).also {
-//        println(it)
-//        check(it == 24)
-//    }
+
+    check(part1(testInput) == 24)
     check(part2(testInput) == 93)
 
     val input = readInputFileByYearAndDay(2022, 14)
