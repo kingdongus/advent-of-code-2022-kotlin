@@ -23,6 +23,8 @@ data class Point(val x: Int, val y: Int) {
     fun moveBy(x: Int, y: Int): Point = Point(this.x + x, this.y + y)
     infix fun moveBy(by: Point): Point = Point(this.x + by.x, this.y + by.y)
 
+    infix fun manhattanDistance(to: Point) = abs(this.x - to.x) + abs(this.y - to.y)
+
     // only works for points that are either horizontal, vertical or diagonal to each other
     operator fun rangeTo(other: Point): List<Point> {
         return if (this isHorizontalTo other) {
