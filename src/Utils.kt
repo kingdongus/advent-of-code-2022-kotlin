@@ -41,4 +41,7 @@ data class Point(val x: Int, val y: Int) {
             (0..abs(this.x - other.x)).map { this.moveBy(it * dirX, it * dirY) }.toList()
         } else listOf()
     }
+
+    operator fun times(other: Int): Point = Point(x * other, y * other)
+    operator fun plus(other: Point): Point = Point(x + other.x, y + other.y)
 }
