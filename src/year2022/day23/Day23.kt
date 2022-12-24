@@ -52,41 +52,37 @@ fun main() {
         elf.surroundings().map { elfPositions[it.y][it.x] }.count { it } > 0
 
 
-    fun part1(input: List<String>): Int {
-        val parsedInput = input.map { it.split("") }
-            .map { it.drop(1) }
-            .map { it.dropLast(1) }
-            .toTypedArray()
-
-        val checkOrder = mutableListOf(Direction.N, Direction.S, Direction.W, Direction.E)
-
-        // in 10 moves, the field cannot extend by more than 10 in each direction
-
-        val buffer = 10
-        val dimYNew = parsedInput.size + 2 * buffer
-        val dimXNew = parsedInput[0].size + 2 * buffer
-
-        var elfPositions = Array(dimYNew) { BooleanArray(dimXNew) { false } } // easy elf position lookup
-        var proposals = Array(dimYNew) { IntArray(dimXNew) { 0 } } // store proposals
+    fun initializeElves(
+        parsedInput: Array<List<String>>,
+        buffer: Int
+    ): MutableList<Elf> {
         val elves = mutableListOf<Elf>() // easy iteration over elves
-
-        // init elves
         parsedInput.forEachIndexed { indexY, strings ->
             strings.forEachIndexed { indexX, s ->
                 if (s == "#") elves.add(Elf(Point(indexX + buffer, indexY + buffer)))
             }
         }
-        elves
-            .forEach { elfPositions[it.position.y][it.position.x] = true }
+        return elves
+    }
 
-        repeat(10) {
-            // make proposals
 
-            // elves without nearby elves don't move
-            val elvesWithNeighbours = elves.filter { elf -> hasNearbyElves(elf, elfPositions) }
+    // return true if someone moved, false if not
+    fun simulateRound(
+        dimYNew: Int,
+        dimXNew: Int,
+        elves: MutableList<Elf>,
+        checkOrder: MutableList<Direction>
+    ): Boolean {
+        val elfPositions = Array(dimYNew) { BooleanArray(dimXNew) { false } } // easy elf position lookup
+        elves.forEach { elfPositions[it.position.y][it.position.x] = true }
 
-            // compute proposals
-            elvesWithNeighbours.forEach { elf ->
+        val elvesWithNeighbours = elves.filter { elf -> hasNearbyElves(elf, elfPositions) }
+        if (elvesWithNeighbours.isEmpty()) return false
+
+        // compute proposals
+        val proposals = Array(dimYNew) { IntArray(dimXNew) { 0 } } // store proposals
+        elvesWithNeighbours
+            .forEach { elf ->
                 for (direction in checkOrder) {
                     val hasNoElves = elf.surroundingsInDirection(direction)
                         .map { point -> elfPositions[point.y][point.x] }
@@ -99,32 +95,47 @@ fun main() {
                 }
             }
 
-            // find proposals with duplicate targets, then make elves not move
-            val duplicates = mutableListOf<Point>()
-            proposals.forEachIndexed { y, line ->
-                line.forEachIndexed { x, i ->
-                    if (i > 1) duplicates.add(Point(x, y))
-                }
+        // find proposals with duplicate targets, then make elves not move
+        val duplicates = mutableListOf<Point>()
+        proposals.forEachIndexed { y, line ->
+            line.forEachIndexed { x, i ->
+                if (i > 1) duplicates.add(Point(x, y))
             }
-            elvesWithNeighbours.forEach { elf -> if (duplicates.contains(elf.proposal)) elf.proposal = elf.position }
+        }
+        elvesWithNeighbours.forEach { elf -> if (duplicates.contains(elf.proposal)) elf.proposal = elf.position }
 
-            // move elves with unique targets
-            elvesWithNeighbours.forEach { elf -> elf.performMove() }
-            elfPositions = Array(dimYNew) { BooleanArray(dimXNew) { false } }
-            elves.forEach { elf -> elfPositions[elf.position.y][elf.position.x] = true }
-            proposals = Array(dimYNew) { IntArray(dimXNew) { 0 } }
-            // change priority of directions for next iteration
-            checkOrder.add(checkOrder.first())
-            checkOrder.removeAt(0)
+        // move elves with unique targets
+        elvesWithNeighbours.forEach { elf -> elf.performMove() }
+        elves.forEach { elf -> elfPositions[elf.position.y][elf.position.x] = true }
+        // change priority of directions for next iteration
+        checkOrder.add(checkOrder.first())
+        checkOrder.removeAt(0)
+        return true
+    }
 
-            println("after iteration $it")
+    fun part1(input: List<String>): Int {
+        val parsedInput = input.map { it.split("") }
+            .map { it.drop(1) }
+            .map { it.dropLast(1) }
+            .toTypedArray()
+        
+        // big brain assumption
+        // in 10 moves, the field cannot extend by more than 10 in each direction
+        val buffer = 10
+        val dimYNew = parsedInput.size + 2 * buffer
+        val dimXNew = parsedInput[0].size + 2 * buffer
 
+        val elves = initializeElves(parsedInput, buffer) // easy iteration over elves
+        val checkOrder = mutableListOf(Direction.N, Direction.S, Direction.W, Direction.E)
+
+        repeat(10) {
+            simulateRound(dimYNew, dimXNew, elves, checkOrder)
         }
 
-        val minX = elves.map { it.position.x }.min()
-        val minY = elves.map { it.position.y }.min()
-        val maxX = elves.map { it.position.x }.max()
-        val maxY = elves.map { it.position.y }.max()
+        val minX = elves.minOf { it.position.x }
+        val minY = elves.minOf { it.position.y }
+        val maxX = elves.maxOf { it.position.x }
+        val maxY = elves.maxOf { it.position.y }
 
         return ((maxX - minX + 1) * (maxY - minY + 1)) - elves.size
     }
@@ -136,72 +147,17 @@ fun main() {
             .map { it.dropLast(1) }
             .toTypedArray()
 
-        val checkOrder = mutableListOf(Direction.N, Direction.S, Direction.W, Direction.E)
-
-        // in 10 moves, the field cannot extend by more than 10 in each direction
-
+        // big brain assumption
+        // the field will not extend by more than 1000 in each direction
         val buffer = 1000
         val dimYNew = parsedInput.size + 2 * buffer
         val dimXNew = parsedInput[0].size + 2 * buffer
 
-        var elfPositions = Array(dimYNew) { BooleanArray(dimXNew) { false } } // easy elf position lookup
-        var proposals = Array(dimYNew) { IntArray(dimXNew) { 0 } } // store proposals
-        val elves = mutableListOf<Elf>() // easy iteration over elves
+        val checkOrder = mutableListOf(Direction.N, Direction.S, Direction.W, Direction.E)
+        val elves = initializeElves(parsedInput, buffer) // easy iteration over elves
 
-        // init elves
-        parsedInput.forEachIndexed { indexY, strings ->
-            strings.forEachIndexed { indexX, s ->
-                if (s == "#") elves.add(Elf(Point(indexX + buffer, indexY + buffer)))
-            }
-        }
-        elves
-            .forEach { elfPositions[it.position.y][it.position.x] = true }
-
-        var round = 0
-        while (true) {
-            round++
-            // make proposals
-
-            // elves without nearby elves don't move
-            val elvesWithNeighbours = elves.filter { elf -> hasNearbyElves(elf, elfPositions) }
-
-            if (elvesWithNeighbours.isEmpty()) break
-
-            // compute proposals
-            elvesWithNeighbours.forEach { elf ->
-                for (direction in checkOrder) {
-                    val hasNoElves = elf.surroundingsInDirection(direction)
-                        .map { point -> elfPositions[point.y][point.x] }
-                        .count { !it } == 3
-                    if (hasNoElves) {
-                        val (x, y) = elf.propose(direction)
-                        proposals[y][x] += 1
-                        break
-                    }
-                }
-            }
-
-            // find proposals with duplicate targets, then make elves not move
-            val duplicates = mutableListOf<Point>()
-            proposals.forEachIndexed { y, line ->
-                line.forEachIndexed { x, i ->
-                    if (i > 1) duplicates.add(Point(x, y))
-                }
-            }
-            elvesWithNeighbours.forEach { elf -> if (duplicates.contains(elf.proposal)) elf.proposal = elf.position }
-
-            // move elves with unique targets
-            elvesWithNeighbours.forEach { elf -> elf.performMove() }
-            elfPositions = Array(dimYNew) { BooleanArray(dimXNew) { false } }
-            elves.forEach { elf -> elfPositions[elf.position.y][elf.position.x] = true }
-            proposals = Array(dimYNew) { IntArray(dimXNew) { 0 } }
-            // change priority of directions for next iteration
-            checkOrder.add(checkOrder.first())
-            checkOrder.removeAt(0)
-
-            println("after iteration $round")
-
-        }
+        var round = 1
+        while (simulateRound(dimYNew, dimXNew, elves, checkOrder)) round++
 
         return round
     }
