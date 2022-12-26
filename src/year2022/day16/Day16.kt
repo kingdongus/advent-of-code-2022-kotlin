@@ -63,12 +63,10 @@ fun main() {
         return valves
     }
 
-    fun part1(input: List<String>): Int {
-
-        val valves = initializeValves(input)
+    fun maximizeSteam(valves: List<Valve>, maxTime: Int): Int {
         val memory = mutableMapOf<Int, Int>()
 
-        fun aux(current: Valve, seen: List<Valve>, totalFlow: Int, timeLeft: Int): Int {
+        fun aux(current: Valve, seen: List<Valve>, totalFlow: Int, maxTime: Int, timeLeft: Int): Int {
 
             if (timeLeft == 0) return 0
 
@@ -84,23 +82,25 @@ fun main() {
                         current,
                         seen + listOf(current),
                         totalFlow + current.flowRate,
+                        maxTime,
                         timeLeft - 1
                     )
                 )
             }
             // for all connections, check what happens if we go there without opening the current one
             current.connections.forEach {
-                res = max(res, aux(it, seen, totalFlow, timeLeft - 1))
+                res = max(res, aux(it, seen, totalFlow, maxTime, timeLeft - 1))
             }
 
             memory[key] = res
 
             return res
-
         }
 
-        return aux(valves.first(), listOf(), 0, 30)
+        return aux(valves.first(), listOf(), 0, maxTime, maxTime)
     }
+
+    fun part1(input: List<String>): Int = maximizeSteam(initializeValves(input), 30)
 
     fun part2(input: List<String>): Int = 0
 
