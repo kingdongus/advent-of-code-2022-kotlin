@@ -40,9 +40,8 @@ data class Valve(val name: String, val flowRate: Int, val connections: MutableLi
     }
 }
 
-// could use this directly as memoization key, but ints are faster,
-// and I don't trust myself to specify a correct hash code by hand
-data class State(val totalFlow: Int, val position: Int, val timeLeft: Int)
+// I don't trust myself to specify a correct hash code by hand
+data class State(val current: String, val timeLeft: Int, val numPlayers: Int, val opened: List<Valve>)
 
 fun main() {
 
@@ -63,33 +62,51 @@ fun main() {
         return valves
     }
 
-    fun maximizeSteam(valves: List<Valve>, maxTime: Int): Int {
-        val memory = mutableMapOf<Int, Int>()
+    fun maximizeSteam(valves: List<Valve>, maxTime: Int, numPlayers: Int): Int {
+        val memory = mutableMapOf<State, Int>()
 
-        fun aux(current: Valve, seen: List<Valve>, totalFlow: Int, maxTime: Int, timeLeft: Int): Int {
+        fun aux(
+            current: Valve,
+            opened: List<Valve>,
+            totalFlow: Int,
+            maxTime: Int,
+            timeLeft: Int,
+            numPlayers: Int
+        ): Int {
 
-            if (timeLeft == 0) return 0
+            // core idea: elephant moves after we have moved, not in parallel
+            // this works because the elephant starts with the same time and
+            // remembers what we opened
+            if (timeLeft == 0) return if (numPlayers == 1) 0 else aux(
+                valves.first(),
+                opened,
+                totalFlow,
+                maxTime,
+                maxTime,
+                numPlayers - 1
+            )
 
-            val key = State(totalFlow, valves.indexOf(current), timeLeft).hashCode()
+            val key = State(current.name, timeLeft, numPlayers, opened.sortedBy { it.name })
             if (memory.contains(key)) return memory[key]!!
 
             // if current valve has flow greater 0 and is not opened, might open it
             var res = 0
-            if (current.flowRate > 0 && !(seen.contains(current))) {
+            if (current.flowRate > 0 && !(opened.contains(current))) {
                 res = max(
                     res,
                     (timeLeft - 1) * current.flowRate + aux(
                         current,
-                        seen + listOf(current),
+                        opened + listOf(current),
                         totalFlow + current.flowRate,
                         maxTime,
-                        timeLeft - 1
+                        timeLeft - 1,
+                        numPlayers
                     )
                 )
             }
             // for all connections, check what happens if we go there without opening the current one
             current.connections.forEach {
-                res = max(res, aux(it, seen, totalFlow, maxTime, timeLeft - 1))
+                res = max(res, aux(it, opened, totalFlow, maxTime, timeLeft - 1, numPlayers))
             }
 
             memory[key] = res
@@ -97,17 +114,18 @@ fun main() {
             return res
         }
 
-        return aux(valves.first(), listOf(), 0, maxTime, maxTime)
+        val res = aux(valves.first(), listOf(), 0, maxTime, maxTime, numPlayers)
+        return res
     }
 
-    fun part1(input: List<String>): Int = maximizeSteam(initializeValves(input), 30)
+    fun part1(input: List<String>): Int = maximizeSteam(initializeValves(input), 30, 1)
 
-    fun part2(input: List<String>): Int = 0
+    fun part2(input: List<String>): Int = maximizeSteam(initializeValves(input), 26, 2)
 
 
     val testInput = readTestFileByYearAndDay(2022, 16)
     check(part1(testInput) == 1651)
-    check(part2(testInput) == 0)
+    check(part2(testInput) == 1707)
 
     val input = readInputFileByYearAndDay(2022, 16)
     println(part1(input))
