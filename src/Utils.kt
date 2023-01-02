@@ -16,6 +16,29 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
     .toString(16)
     .padStart(32, '0')
 
+/**
+ * "String::split for lists"
+ * Takes a list of items, and uses a condition on elements to partition those lists into lists of lists.
+ * Example:
+ * ["a","a","b","","a","a","c"]
+ * with a condition of {it.isBlank()}
+ * turns into
+ * [["a","a","b"]["a","a","c"]]
+ */
+infix fun <T> List<T>.partitionBy(condition: (T) -> Boolean): List<List<T>> {
+    val result = mutableListOf<List<T>>()
+    var accumulator = mutableListOf<T>()
+
+    this.forEach {
+        if (condition.invoke(it)) {
+            result += accumulator
+            accumulator = mutableListOf()
+        } else accumulator += it
+    }
+    if (accumulator.isNotEmpty()) result += accumulator
+    return result
+}
+
 data class Point(val x: Int, val y: Int) {
     infix fun isHorizontalTo(other: Point): Boolean = this.y == other.y
     infix fun isVerticalTo(other: Point): Boolean = this.x == other.x

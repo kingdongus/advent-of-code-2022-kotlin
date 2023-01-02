@@ -15,10 +15,9 @@ fun main() {
 
     infix fun String.intersect(other: String): String = (this.toSet() intersect other.toSet()).joinToString("")
 
-
     fun part1(input: List<String>): Int =
-        input.asSequence().map { it to it.length }
-            .map { it.first.substring(0, it.second / 2) to it.first.substring(it.second / 2) }
+        input.asSequence()
+            .map { it.substring(0, it.length / 2) to it.substring(it.length / 2) }
             .map { it.first intersect it.second }
             .map { it.first() }
             .sumOf { it.toPriority() }
@@ -28,7 +27,6 @@ fun main() {
             .map { it.reduce { acc, s -> acc intersect s } }
             .map { it[0] }
             .sumOf { it.toPriority() }
-
 
     val testInput = readTestFileByYearAndDay(2022, 3)
     check(part1(testInput) == 157)

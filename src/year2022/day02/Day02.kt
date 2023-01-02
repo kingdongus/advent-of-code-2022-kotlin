@@ -38,7 +38,6 @@ fun main() {
     fun part1(input: List<String>): Int = mapToInValueAndSum(input, scores)
     fun part2(input: List<String>): Int = mapToInValueAndSum(input, opponentMovesAndOutcomes)
 
-
     val testInput = readTestFileByYearAndDay(2022, 2)
     check(part1(testInput) == 15)
     check(part2(testInput) == 12)
