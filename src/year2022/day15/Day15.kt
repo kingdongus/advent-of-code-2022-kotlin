@@ -1,12 +1,12 @@
 package year2022.day15
 
-import Point
+import Point2D
 import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 import kotlin.math.abs
 
 fun main() {
-    data class Reading(val signal: Point, val closestBeacon: Point) {
+    data class Reading(val signal: Point2D, val closestBeacon: Point2D) {
         fun reach(): Int = signal manhattanDistance closestBeacon
         fun minReachableY(): Int = signal.y - reach()
         fun maxReachableY(): Int = signal.y + reach()
@@ -14,26 +14,46 @@ fun main() {
         infix fun canReachY(toReach: Int): Boolean =
             if (this.signal.y > toReach) minReachableY() <= toReach else maxReachableY() >= toReach
 
-        infix fun canReach(other: Point): Boolean = (this.signal manhattanDistance other) <= this.reach()
+        infix fun canReach(other: Point2D): Boolean = (this.signal manhattanDistance other) <= this.reach()
 
-        infix fun intersectWithY(y: Int): List<Point> {
+        infix fun intersectWithY(y: Int): List<Point2D> {
             if (!this.canReachY(y)) return listOf()
 
             val dyToY = abs(signal.y - y)
             val offsetXMin = -(reach() - dyToY)
             val offsetXMax = reach() - dyToY
 
-            return Point(signal.x + offsetXMin, y)..Point(signal.x + offsetXMax, y)
+            return Point2D(signal.x + offsetXMin, y)..Point2D(signal.x + offsetXMax, y)
         }
 
-        infix fun expandManhattanCircleBy(by: Int): List<Point> {
+        infix fun expandManhattanCircleBy(by: Int): List<Point2D> {
             val radius = (this.signal manhattanDistance this.closestBeacon) + by
-            val result = mutableListOf<Point>()
+            val result = mutableListOf<Point2D>()
 
-            result.addAll(Point(this.signal.x, this.signal.y + radius)..Point(this.signal.x + radius, this.signal.y))
-            result.addAll(Point(this.signal.x + radius, this.signal.y)..Point(this.signal.x, this.signal.y - radius))
-            result.addAll(Point(this.signal.x, this.signal.y - radius)..Point(this.signal.x - radius, this.signal.y))
-            result.addAll(Point(this.signal.x - radius, this.signal.y)..Point(this.signal.x, this.signal.y + radius))
+            result.addAll(
+                Point2D(this.signal.x, this.signal.y + radius)..Point2D(
+                    this.signal.x + radius,
+                    this.signal.y
+                )
+            )
+            result.addAll(
+                Point2D(this.signal.x + radius, this.signal.y)..Point2D(
+                    this.signal.x,
+                    this.signal.y - radius
+                )
+            )
+            result.addAll(
+                Point2D(this.signal.x, this.signal.y - radius)..Point2D(
+                    this.signal.x - radius,
+                    this.signal.y
+                )
+            )
+            result.addAll(
+                Point2D(this.signal.x - radius, this.signal.y)..Point2D(
+                    this.signal.x,
+                    this.signal.y + radius
+                )
+            )
 
             return result.distinct()
         }
@@ -49,7 +69,7 @@ fun main() {
                 .map { it.split("=") }
                 .map { it.last() }
                 .map { it.toInt() }
-        }.map { Reading(signal = Point(it[0], it[1]), closestBeacon = Point(it[2], it[3])) }
+        }.map { Reading(signal = Point2D(it[0], it[1]), closestBeacon = Point2D(it[2], it[3])) }
             .toList()
         return readings
     }

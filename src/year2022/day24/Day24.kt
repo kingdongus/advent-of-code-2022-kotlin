@@ -1,15 +1,15 @@
 package year2022.day24
 
-import Point
+import Point2D
 import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 
-enum class Action(val offset: Point) {
-    UP(Point(0, -1)),
-    DOWN(Point(0, 1)),
-    RIGHT(Point(1, 0)),
-    LEFT(Point(-1, 0)),
-    WAIT(Point(0, 0));
+enum class Action(val offset: Point2D) {
+    UP(Point2D(0, -1)),
+    DOWN(Point2D(0, 1)),
+    RIGHT(Point2D(1, 0)),
+    LEFT(Point2D(-1, 0)),
+    WAIT(Point2D(0, 0));
 
     companion object {
         infix fun from(s: String): Action = when (s) {
@@ -22,13 +22,13 @@ enum class Action(val offset: Point) {
     }
 }
 
-data class Blizzard(var position: Point, var direction: Action)
+data class Blizzard(var position: Point2D, var direction: Action)
 
 fun main() {
 
     fun simulateTrip(
-        startingPoint: Point,
-        goal: Point,
+        startingPoint: Point2D,
+        goal: Point2D,
         field: List<String>,
         blizzards: MutableList<Blizzard>
     ): Int {
@@ -46,10 +46,10 @@ fun main() {
             blizzards.onEach {
                 it.position += it.direction.offset
                 // blizzard preservation of energy
-                if (it.position.x == 0) it.position = Point(blizzardPositions[0].lastIndex - 1, it.position.y)
-                if (it.position.x == blizzardPositions[0].lastIndex) it.position = Point(1, it.position.y)
-                if (it.position.y == 0) it.position = Point(it.position.x, blizzardPositions.lastIndex - 1)
-                if (it.position.y == blizzardPositions.lastIndex) it.position = Point(it.position.x, 1)
+                if (it.position.x == 0) it.position = Point2D(blizzardPositions[0].lastIndex - 1, it.position.y)
+                if (it.position.x == blizzardPositions[0].lastIndex) it.position = Point2D(1, it.position.y)
+                if (it.position.y == 0) it.position = Point2D(it.position.x, blizzardPositions.lastIndex - 1)
+                if (it.position.y == blizzardPositions.lastIndex) it.position = Point2D(it.position.x, 1)
             }.forEach {
                 blizzardPositions[it.position.y][it.position.x] = true
             }
@@ -75,21 +75,21 @@ fun main() {
         for (i in 1 until input.size)
             for (j in 1 until input[0].length)
                 if (listOf('<', '>', '^', 'v').contains(input[i][j]))
-                    blizzards.add(Blizzard(Point(j, i), Action.from(input[i][j].toString())))
+                    blizzards.add(Blizzard(Point2D(j, i), Action.from(input[i][j].toString())))
         return blizzards
     }
 
     fun part1(input: List<String>): Int {
-        val startingPoint = Point(input.first().indexOf('.'), 0)
-        val goal = Point(input.last().indexOf('.'), input.lastIndex)
+        val startingPoint = Point2D(input.first().indexOf('.'), 0)
+        val goal = Point2D(input.last().indexOf('.'), input.lastIndex)
         val blizzards = initializeBlizzardsFromInput(input)
 
         return simulateTrip(startingPoint, goal, input, blizzards)
     }
 
     fun part2(input: List<String>): Int {
-        val startingPoint = Point(input.first().indexOf('.'), 0)
-        val goal = Point(input.last().indexOf('.'), input.lastIndex)
+        val startingPoint = Point2D(input.first().indexOf('.'), 0)
+        val goal = Point2D(input.last().indexOf('.'), input.lastIndex)
         val blizzards = initializeBlizzardsFromInput(input)
 
         // assume that optimal partial solutions contribute to an optimal complete solution

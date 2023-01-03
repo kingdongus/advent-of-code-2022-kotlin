@@ -1,18 +1,18 @@
 package year2022.day23
 
-import Point
+import Point2D
 import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 
-enum class Direction(val offset: Point) {
-    N(Point(0, -1)),
-    NE(Point(1, -1)),
-    E(Point(1, 0)),
-    SE(Point(1, 1)),
-    S(Point(0, 1)),
-    SW(Point(-1, 1)),
-    W(Point(-1, 0)),
-    NW(Point(-1, -1));
+enum class Direction(val offset: Point2D) {
+    N(Point2D(0, -1)),
+    NE(Point2D(1, -1)),
+    E(Point2D(1, 0)),
+    SE(Point2D(1, 1)),
+    S(Point2D(0, 1)),
+    SW(Point2D(-1, 1)),
+    W(Point2D(-1, 0)),
+    NW(Point2D(-1, -1));
 }
 
 fun toCheck(direction: Direction): List<Direction> = when (direction) {
@@ -22,15 +22,15 @@ fun toCheck(direction: Direction): List<Direction> = when (direction) {
     else -> listOf(Direction.W, Direction.SW, Direction.NW)
 }
 
-data class Elf(var position: Point) {
-    var proposal: Point = position
-    fun performMove(): Point {
+data class Elf(var position: Point2D) {
+    var proposal: Point2D = position
+    fun performMove(): Point2D {
         position = proposal
         proposal = position
         return position
     }
 
-    fun propose(direction: Direction): Point {
+    fun propose(direction: Direction): Point2D {
         proposal = position + direction.offset
         return proposal
     }
@@ -42,7 +42,7 @@ data class Elf(var position: Point) {
         for (i in -1..1)
             for (j in -1..1)
                 if (!(i == 0 && j == 0))
-                    yield(Point(position.x + i, position.y + j))
+                    yield(Point2D(position.x + i, position.y + j))
     }
 }
 
@@ -59,7 +59,7 @@ fun main() {
         val elves = mutableListOf<Elf>() // easy iteration over elves
         parsedInput.forEachIndexed { indexY, strings ->
             strings.forEachIndexed { indexX, s ->
-                if (s == "#") elves.add(Elf(Point(indexX + buffer, indexY + buffer)))
+                if (s == "#") elves.add(Elf(Point2D(indexX + buffer, indexY + buffer)))
             }
         }
         return elves
@@ -96,10 +96,10 @@ fun main() {
             }
 
         // find proposals with duplicate targets, then make elves not move
-        val duplicates = mutableListOf<Point>()
+        val duplicates = mutableListOf<Point2D>()
         proposals.forEachIndexed { y, line ->
             line.forEachIndexed { x, i ->
-                if (i > 1) duplicates.add(Point(x, y))
+                if (i > 1) duplicates.add(Point2D(x, y))
             }
         }
         elvesWithNeighbours.forEach { elf -> if (duplicates.contains(elf.proposal)) elf.proposal = elf.position }
@@ -118,7 +118,7 @@ fun main() {
             .map { it.drop(1) }
             .map { it.dropLast(1) }
             .toTypedArray()
-        
+
         // big brain assumption
         // in 10 moves, the field cannot extend by more than 10 in each direction
         val buffer = 10

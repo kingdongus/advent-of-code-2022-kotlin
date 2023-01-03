@@ -1,12 +1,12 @@
 package year2022.day14
 
-import Point
+import Point2D
 import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 import kotlin.math.max
 import kotlin.math.min
 
-class Cave(val dimension: Point) {
+class Cave(val dimension: Point2D) {
 
     // we go cheap and model the field as characters, similar to the visualization on the page
     var fieldState: Array<CharArray> = arrayOf(CharArray(1) { '.' })
@@ -18,7 +18,7 @@ class Cave(val dimension: Point) {
         fieldState = Array(dimension.y) { CharArray(dimension.x) { '.' } }
     }
 
-    fun addRocks(locations: List<Point>) {
+    fun addRocks(locations: List<Point2D>) {
         // very brittle code, does no checks against the dimensions
         locations.forEach { fieldState[it.y][it.x] = '#' }
         rightEdge = max(rightEdge, locations.maxOf { it.x })
@@ -26,7 +26,7 @@ class Cave(val dimension: Point) {
         bottomEdge = max(bottomEdge, locations.maxOf { it.y })
     }
 
-    private fun isOutOfBounds(position: Point) =
+    private fun isOutOfBounds(position: Point2D) =
         position.y < leftEdge || position.y > rightEdge || position.x > bottomEdge
 
     // true if sand was placed, false if it fell into the void OR would block the spawn
@@ -44,7 +44,7 @@ class Cave(val dimension: Point) {
         }
     }
 
-    private fun nextPosition(sand: Point): Point {
+    private fun nextPosition(sand: Point2D): Point2D {
         for (direction in directions) {
             val newPosition = sand.moveBy(direction)
             if (isOutOfBounds(newPosition)) return newPosition
@@ -56,17 +56,17 @@ class Cave(val dimension: Point) {
     }
 
     companion object {
-        val spawnPoint = Point(0, 500)
-        val directions = listOf(Point(1, 0), Point(1, -1), Point(1, 1))
+        val spawnPoint = Point2D(0, 500)
+        val directions = listOf(Point2D(1, 0), Point2D(1, -1), Point2D(1, 1))
     }
 }
 
 fun main() {
-    fun parseRockLocations(input: List<String>): List<Point> {
+    fun parseRockLocations(input: List<String>): List<Point2D> {
         val rockLocations = input.map { it.split(" -> ") }
             .map {
                 it.map { numbers -> numbers.split(",") }
-                    .map { number -> Point(number.first().toInt(), number.last().toInt()) }
+                    .map { number -> Point2D(number.first().toInt(), number.last().toInt()) }
             }.flatMap { it.dropLast(1).zip(it.drop(1)) }
             .flatMap { it.first..it.second }
             .distinct()
@@ -75,7 +75,7 @@ fun main() {
 
     fun part1(input: List<String>): Int {
         val rockLocations = parseRockLocations(input)
-        val cave = Cave(dimension = Point(rockLocations.maxOf { it.x } + 1, rockLocations.maxOf { it.y } + 1))
+        val cave = Cave(dimension = Point2D(rockLocations.maxOf { it.x } + 1, rockLocations.maxOf { it.y } + 1))
         cave.addRocks(rockLocations)
         var maxSand = 0
         while (cave.addSand()) maxSand++
@@ -87,8 +87,8 @@ fun main() {
         val depthFromReadings = rockLocations.maxOf { it.y }
         // we manually add another layer of rocks slightly lower than whatever the reading tells us
         // when the description says "infinite in both directions", it really meant the range 0..9999
-        rockLocations.addAll((0 until 1000).map { Point(it, depthFromReadings + 2) })
-        val cave = Cave(dimension = Point(rockLocations.maxOf { it.x } + 1, rockLocations.maxOf { it.y } + 1))
+        rockLocations.addAll((0 until 1000).map { Point2D(it, depthFromReadings + 2) })
+        val cave = Cave(dimension = Point2D(rockLocations.maxOf { it.x } + 1, rockLocations.maxOf { it.y } + 1))
         cave.addRocks(rockLocations)
         var maxSand = 0
         while (cave.addSand()) maxSand++

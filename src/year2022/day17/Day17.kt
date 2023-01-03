@@ -1,46 +1,47 @@
 package year2022.day17
 
-import Point
+import Point2D
 import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 
 val shapes = mapOf(
-    0 to setOf(Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0)), // plank
-    1 to setOf(Point(1, 0), Point(0, 1), Point(1, 1), Point(2, 1), Point(1, 2)), // cross
-    2 to setOf(Point(0, 0), Point(1, 0), Point(2, 0), Point(2, 1), Point(2, 2)), // inverse L
-    3 to setOf(Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3)), // stick
-    4 to setOf(Point(0, 0), Point(0, 1), Point(1, 0), Point(1, 1)) // block
+    0 to setOf(Point2D(0, 0), Point2D(1, 0), Point2D(2, 0), Point2D(3, 0)), // plank
+    1 to setOf(Point2D(1, 0), Point2D(0, 1), Point2D(1, 1), Point2D(2, 1), Point2D(1, 2)), // cross
+    2 to setOf(Point2D(0, 0), Point2D(1, 0), Point2D(2, 0), Point2D(2, 1), Point2D(2, 2)), // inverse L
+    3 to setOf(Point2D(0, 0), Point2D(0, 1), Point2D(0, 2), Point2D(0, 3)), // stick
+    4 to setOf(Point2D(0, 0), Point2D(0, 1), Point2D(1, 0), Point2D(1, 1)) // block
 )
 
 infix fun Set<*>.containsAny(other: Set<*>): Boolean = other.any { this.contains(it) }
 
 // 2 from left, "3 free rows" from top
-val spawnOffset = Point(2, 4)
-fun spawnRock(id: Int, top: Int): Set<Point> = shapes[id]!!.map { it + spawnOffset }.map { it + Point(0, top) }.toSet()
+val spawnOffset = Point2D(2, 4)
+fun spawnRock(id: Int, top: Int): Set<Point2D> =
+    shapes[id]!!.map { it + spawnOffset }.map { it + Point2D(0, top) }.toSet()
 
 
-fun moveLeft(points: Set<Point>): Set<Point> =
+fun moveLeft(points: Set<Point2D>): Set<Point2D> =
     if (points.any { it.x == 0 }) points // on left edge
-    else points.map { Point(it.x - 1, it.y) }.toSet()
+    else points.map { Point2D(it.x - 1, it.y) }.toSet()
 
-fun moveRight(points: Set<Point>): Set<Point> =
+fun moveRight(points: Set<Point2D>): Set<Point2D> =
     if (points.any { it.x == 6 }) points  // on right edge
-    else points.map { Point(it.x + 1, it.y) }.toSet()
+    else points.map { Point2D(it.x + 1, it.y) }.toSet()
 
-fun moveDown(points: Set<Point>): Set<Point> = points.map { Point(it.x, it.y - 1) }.toSet()
+fun moveDown(points: Set<Point2D>): Set<Point2D> = points.map { Point2D(it.x, it.y - 1) }.toSet()
 
-fun moveUp(points: Set<Point>): Set<Point> = points.map { Point(it.x, it.y + 1) }.toSet()
+fun moveUp(points: Set<Point2D>): Set<Point2D> = points.map { Point2D(it.x, it.y + 1) }.toSet()
 
-fun topRowsNormalized(rocks: Set<Point>, offset: Int): Set<Point> {
+fun topRowsNormalized(rocks: Set<Point2D>, offset: Int): Set<Point2D> {
     val maxY = rocks.maxOf { it.y }
-    return rocks.filter { it.y >= maxY - offset }.map { Point(it.x, maxY - it.y) }.toSet()
+    return rocks.filter { it.y >= maxY - offset }.map { Point2D(it.x, maxY - it.y) }.toSet()
 }
 
-data class MemoryItem(val rocks: Set<Point>, val steamIndex: Int, val shapeIndex: Int)
+data class MemoryItem(val rocks: Set<Point2D>, val steamIndex: Int, val shapeIndex: Int)
 
 fun calculateHighestColumn(input: List<String>, numRocks: Long): Long {
     val steam = input.first()
-    val placedRocks = (0..6).map { Point(it, 0) }.toMutableSet() // bottom row
+    val placedRocks = (0..6).map { Point2D(it, 0) }.toMutableSet() // bottom row
     var top = 0
     var idxSteam = 0
     var idxRock = 0

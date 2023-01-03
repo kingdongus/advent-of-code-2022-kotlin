@@ -4,6 +4,9 @@ import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 import java.util.*
 
+
+operator fun Regex.contains(text: CharSequence): Boolean = this.matches(text)
+
 fun main() {
 
     data class File(val name: String, val size: Int)
@@ -13,8 +16,6 @@ fun main() {
         val files = mutableListOf<File>()
         fun size(): Int = subFolders.sumOf { it.size() } + files.sumOf { it.size }
     }
-
-    operator fun Regex.contains(text: CharSequence): Boolean = this.matches(text)
 
     fun parseFileSystem(input: List<String>): Folder {
         val root = Folder()
@@ -67,7 +68,6 @@ fun main() {
 
     fun part2(input: List<String>): Int {
         val root = parseFileSystem(input)
-
 
         val totalSpace = 70000000
         val unusedSpaceNeeded = 30000000

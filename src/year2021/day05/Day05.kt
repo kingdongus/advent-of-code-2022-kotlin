@@ -1,17 +1,17 @@
 package year2021.day05
 
-import Point
+import Point2D
 import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 
 fun main() {
 
-    fun countOverlappingPoints(input: List<String>, lineCondition: (Point, Point) -> Boolean): Int =
+    fun countOverlappingPoints(input: List<String>, lineCondition: (Point2D, Point2D) -> Boolean): Int =
         input.asSequence()
             .map { it.split(" -> ") }
             .map { it[0].split(",") to it[1].split(",") }
             .map {
-                Point(it.first[0].toInt(), it.first[1].toInt()) to Point(
+                Point2D(it.first[0].toInt(), it.first[1].toInt()) to Point2D(
                     it.second[0].toInt(), it.second[1].toInt()
                 )
             }

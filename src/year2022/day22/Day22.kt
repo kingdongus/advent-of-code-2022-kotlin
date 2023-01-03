@@ -1,17 +1,17 @@
 package year2022.day22
 
-import Point
+import Point2D
 import readInputFileByYearAndDay
 import readTestFileByYearAndDay
 import year2022.day22.Orientation.*
 import kotlin.math.max
 import kotlin.math.min
 
-enum class Orientation(val direction: Point, val facing: Int) {
-    UP(Point(0, -1), 3),
-    DOWN(Point(0, 1), 1),
-    LEFT(Point(-1, 0), 2),
-    RIGHT(Point(1, 0), 0);
+enum class Orientation(val direction: Point2D, val facing: Int) {
+    UP(Point2D(0, -1), 3),
+    DOWN(Point2D(0, 1), 1),
+    LEFT(Point2D(-1, 0), 2),
+    RIGHT(Point2D(1, 0), 0);
 
     fun turnRight(): Orientation =
         when (this) {
@@ -59,7 +59,7 @@ fun tokenizeInstructions(instructions: String): List<String> {
 
 fun main() {
 
-    fun walkFlat(field: Array<String>, startPosition: Point, orientation: Orientation, numSteps: Int): Point {
+    fun walkFlat(field: Array<String>, startPosition: Point2D, orientation: Orientation, numSteps: Int): Point2D {
         val fieldDimensionX = field[0].length
         val fieldDimensionY = field.size
         var (x, y) = startPosition
@@ -117,7 +117,7 @@ fun main() {
                 y = newY
             }
         }
-        return Point(x, y)
+        return Point2D(x, y)
     }
 
     fun parseMap(input: List<String>): Array<String> {
@@ -140,7 +140,7 @@ fun main() {
                 "L" -> orientation = orientation.turnLeft()
                 "R" -> orientation = orientation.turnRight()
                 else -> {
-                    val newPos = walkFlat(parsedMapByRow, Point(x, y), orientation, it.toInt())
+                    val newPos = walkFlat(parsedMapByRow, Point2D(x, y), orientation, it.toInt())
                     x = newPos.x
                     y = newPos.y
                 }
@@ -155,17 +155,17 @@ fun main() {
     //  3
     // 54
     // 6
-    data class CubeFace(val topLeft: Point)
+    data class CubeFace(val topLeft: Point2D)
 
     // overlay map with cube faces
     // hardcoded for part 2
     val faceDim = 50
-    val face1 = CubeFace(topLeft = Point(faceDim * 2, 0))
-    val face2 = CubeFace(topLeft = Point(faceDim, 0))
-    val face3 = CubeFace(topLeft = Point(faceDim, faceDim))
-    val face4 = CubeFace(topLeft = Point(faceDim, faceDim * 2))
-    val face5 = CubeFace(topLeft = Point(0, faceDim * 2))
-    val face6 = CubeFace(topLeft = Point(0, faceDim * 3))
+    val face1 = CubeFace(topLeft = Point2D(faceDim * 2, 0))
+    val face2 = CubeFace(topLeft = Point2D(faceDim, 0))
+    val face3 = CubeFace(topLeft = Point2D(faceDim, faceDim))
+    val face4 = CubeFace(topLeft = Point2D(faceDim, faceDim * 2))
+    val face5 = CubeFace(topLeft = Point2D(0, faceDim * 2))
+    val face6 = CubeFace(topLeft = Point2D(0, faceDim * 3))
 
     val faces = listOf(face1, face2, face3, face4, face5, face6)
 
@@ -174,16 +174,16 @@ fun main() {
     val right = faceDim - 1
     val bottom = faceDim - 1
 
-    fun startAtTopKeepX(p: Point) = Point(p.x, top)
-    fun startAtTopTransformX(p: Point) = Point(p.y, top)
-    fun startAtBottomKeepX(p: Point) = Point(p.x, bottom)
-    fun startAtBottomTransformX(p: Point) = Point(p.y, bottom)
-    fun startAtLeftTransformXtoY(p: Point) = Point(left, p.x)
-    fun startAtLeftKeepY(p: Point) = Point(left, p.y)
-    fun startAtLeftInvertY(p: Point) = Point(left, faceDim - p.y - 1) // might be off by one
-    fun startAtRightInvertY(p: Point) = Point(right, faceDim - p.y - 1) // might be off by one
-    fun startAtRightKeepY(p: Point) = Point(right, p.y)
-    fun startAtRightTransformXToY(p: Point) = Point(right, p.x) // might be off by one
+    fun startAtTopKeepX(p: Point2D) = Point2D(p.x, top)
+    fun startAtTopTransformX(p: Point2D) = Point2D(p.y, top)
+    fun startAtBottomKeepX(p: Point2D) = Point2D(p.x, bottom)
+    fun startAtBottomTransformX(p: Point2D) = Point2D(p.y, bottom)
+    fun startAtLeftTransformXtoY(p: Point2D) = Point2D(left, p.x)
+    fun startAtLeftKeepY(p: Point2D) = Point2D(left, p.y)
+    fun startAtLeftInvertY(p: Point2D) = Point2D(left, faceDim - p.y - 1) // might be off by one
+    fun startAtRightInvertY(p: Point2D) = Point2D(right, faceDim - p.y - 1) // might be off by one
+    fun startAtRightKeepY(p: Point2D) = Point2D(right, p.y)
+    fun startAtRightTransformXToY(p: Point2D) = Point2D(right, p.x) // might be off by one
 
     // (a,b):(c,d, e) if we exit face a in direction b, enter face c facing direction d transforming coordinates using function e
 
@@ -220,16 +220,16 @@ fun main() {
 
         )
 
-    fun isOutOfCubeFaceBounds(p: Point): Boolean =
+    fun isOutOfCubeFaceBounds(p: Point2D): Boolean =
         p.x < 0 || p.y < 0 || p.y >= faceDim || p.x >= faceDim
 
     fun walkCube(
         startFace: CubeFace,
-        startPosition: Point,
+        startPosition: Point2D,
         orientation: Orientation,
         numSteps: Int,
         slicedFaces: Map<CubeFace, List<String>>
-    ): Triple<Point, Orientation, CubeFace> {
+    ): Triple<Point2D, Orientation, CubeFace> {
         var currentPosition = startPosition
         var currentOrientation = orientation
         var currentCubeFace = startFace
@@ -282,7 +282,7 @@ fun main() {
         // start position: top left of face 2 hardcoded
         var currentCubeFace = face2
         var orientation = RIGHT
-        var position = Point(0, 0)
+        var position = Point2D(0, 0)
 
         tokenizedInstructions.forEach {
             when (it) {

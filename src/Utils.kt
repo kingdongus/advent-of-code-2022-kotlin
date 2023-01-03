@@ -39,25 +39,25 @@ infix fun <T> List<T>.partitionBy(condition: (T) -> Boolean): List<List<T>> {
     return result
 }
 
-data class Point(val x: Int, val y: Int) {
-    infix fun isHorizontalTo(other: Point): Boolean = this.y == other.y
-    infix fun isVerticalTo(other: Point): Boolean = this.x == other.x
-    infix fun isDiagonalTo(other: Point): Boolean = abs(this.x - other.x) == abs(this.y - other.y)
-    fun moveBy(x: Int, y: Int): Point = Point(this.x + x, this.y + y)
-    infix fun moveBy(by: Point): Point = Point(this.x + by.x, this.y + by.y)
+data class Point2D(val x: Int, val y: Int) {
+    infix fun isHorizontalTo(other: Point2D): Boolean = this.y == other.y
+    infix fun isVerticalTo(other: Point2D): Boolean = this.x == other.x
+    infix fun isDiagonalTo(other: Point2D): Boolean = abs(this.x - other.x) == abs(this.y - other.y)
+    fun moveBy(x: Int, y: Int): Point2D = Point2D(this.x + x, this.y + y)
+    infix fun moveBy(by: Point2D): Point2D = Point2D(this.x + by.x, this.y + by.y)
 
-    infix fun manhattanDistance(to: Point) = abs(this.x - to.x) + abs(this.y - to.y)
+    infix fun manhattanDistance(to: Point2D) = abs(this.x - to.x) + abs(this.y - to.y)
 
     // only works for points that are either horizontal, vertical or diagonal to each other
-    operator fun rangeTo(other: Point): List<Point> {
+    operator fun rangeTo(other: Point2D): List<Point2D> {
         return if (this isHorizontalTo other) {
             val minX = Integer.min(this.x, other.x)
             val maxX = Integer.max(this.x, other.x)
-            (minX..maxX).map { Point(it, this.y) }.toList()
+            (minX..maxX).map { Point2D(it, this.y) }.toList()
         } else if (this isVerticalTo other) {
             val minY = Integer.min(this.y, other.y)
             val maxY = Integer.max(this.y, other.y)
-            (minY..maxY).map { Point(this.x, it) }.toList()
+            (minY..maxY).map { Point2D(this.x, it) }.toList()
         } else if (this isDiagonalTo other) {
             val dirX = if (this.x > other.x) -1 else 1
             val dirY = if (this.y > other.y) -1 else 1
@@ -65,7 +65,7 @@ data class Point(val x: Int, val y: Int) {
         } else listOf()
     }
 
-    operator fun times(other: Int): Point = Point(x * other, y * other)
-    operator fun plus(other: Point): Point = Point(x + other.x, y + other.y)
-    operator fun minus(other: Point): Point = Point(x - other.x, y - other.y)
+    operator fun times(other: Int): Point2D = Point2D(x * other, y * other)
+    operator fun plus(other: Point2D): Point2D = Point2D(x + other.x, y + other.y)
+    operator fun minus(other: Point2D): Point2D = Point2D(x - other.x, y - other.y)
 }
