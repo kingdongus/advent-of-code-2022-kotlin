@@ -20,20 +20,20 @@ fun main() {
         fun catch(item: Long) = this.items.add(item)
     }
 
-    fun part1(input: List<Monkey>): Long {
+    fun part1(input: List<Monkey>): Long = input.apply {
         repeat(20) {
-            input.forEach { monkey -> monkey.playRound(input) { it / 3 } }
+            this.forEach { monkey -> monkey.playRound(input) { it / 3 } }
         }
-        return input.map { it.inspected }.sortedDescending().take(2).reduce(Long::times)
-    }
+    }.map { it.inspected }.sortedDescending().take(2).reduce(Long::times)
 
-    fun part2(input: List<Monkey>): Long {
-        val wrapAround = input.map { it.divisor }.reduce(Int::times)
+
+    fun part2(input: List<Monkey>): Long = input.apply {
+        val wrapAround = this.map { it.divisor }.reduce(Int::times)
         repeat(10_000) {
-            input.forEach { monkey -> monkey.playRound(input) { it % wrapAround } }
+            this.forEach { monkey -> monkey.playRound(input) { it % wrapAround } }
         }
-        return input.map { it.inspected }.sortedDescending().take(2).reduce(Long::times)
-    }
+    }.map { it.inspected }.sortedDescending().take(2).reduce(Long::times)
+
 
     // parsing the input is annoying, so I hardcode functions that give me the monkeys
     fun testInput(): List<Monkey> = listOf(

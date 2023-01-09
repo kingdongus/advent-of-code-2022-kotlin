@@ -69,10 +69,7 @@ fun main() {
     fun part2(input: List<String>): Int {
         val root = parseFileSystem(input)
 
-        val totalSpace = 70000000
-        val unusedSpaceNeeded = 30000000
-        val unusedSpace = totalSpace - root.size()
-        val freeSpaceNeeded = unusedSpaceNeeded - unusedSpace
+        val toFreeUp = 30_000_000 - (70_000_000 - root.size())
 
         val toProcess = Stack<Folder>()
         toProcess.push(root)
@@ -81,7 +78,7 @@ fun main() {
         while (toProcess.isNotEmpty()) {
             val next = toProcess.pop()
             val size = next.size()
-            if (size < freeSpaceNeeded) continue
+            if (size < toFreeUp) continue
             next.subFolders.forEach { toProcess.push(it) }
             if (size < bestMatch.size()) bestMatch = next
         }

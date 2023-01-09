@@ -36,19 +36,15 @@ fun main() {
 
     fun part2(input: List<String>): String {
         val spritePositions = calculateXOverTime(input)
-        return listOf(
-            (0..39),
-            (40..79),
-            (80..119),
-            (120..159),
-            (160..199),
-            (200..239)
-        ).joinToString("\n") { row ->
-            row.joinToString(separator = "") {
-                val spriteRange = spritePositions[it] - 1..spritePositions[it] + 1
-                if (spriteRange.contains(it % 40)) "#" else "."
+
+        return listOf(0, 40, 80, 120, 160, 200)
+            .map { it..it + 39 }
+            .joinToString("\n") { row ->
+                row.joinToString(separator = "") {
+                    val spriteRange = spritePositions[it] - 1..spritePositions[it] + 1
+                    if (spriteRange.contains(it % 40)) "#" else "."
+                }
             }
-        }
     }
 
     val testInput = readTestFileByYearAndDay(2022, 10)

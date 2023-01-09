@@ -43,10 +43,12 @@ data class Point2D(val x: Int, val y: Int) {
     infix fun isHorizontalTo(other: Point2D): Boolean = this.y == other.y
     infix fun isVerticalTo(other: Point2D): Boolean = this.x == other.x
     infix fun isDiagonalTo(other: Point2D): Boolean = abs(this.x - other.x) == abs(this.y - other.y)
-    fun moveBy(x: Int, y: Int): Point2D = Point2D(this.x + x, this.y + y)
+    private fun moveBy(x: Int, y: Int): Point2D = Point2D(this.x + x, this.y + y)
     infix fun moveBy(by: Point2D): Point2D = Point2D(this.x + by.x, this.y + by.y)
 
     infix fun manhattanDistance(to: Point2D) = abs(this.x - to.x) + abs(this.y - to.y)
+
+    infix fun isAdjacentTo(other: Point2D): Boolean = abs(this.x - other.x) <= 1 && abs(this.y - other.y) <= 1
 
     // only works for points that are either horizontal, vertical or diagonal to each other
     operator fun rangeTo(other: Point2D): List<Point2D> {
