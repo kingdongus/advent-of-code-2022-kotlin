@@ -5,11 +5,11 @@ import readTestFileByYearAndDay
 
 fun main() {
 
-    fun findMatching(grid: List<CharArray>, toSearch: Char): Set<Pair<Int, Int>> {
+    infix fun List<CharArray>.findMatching(toSearch: Char): Set<Pair<Int, Int>> {
         val ret = mutableSetOf<Pair<Int, Int>>()
-        for (i in grid.indices)
-            for (j in grid[0].indices)
-                if (grid[i][j] == toSearch)
+        for (i in this.indices)
+            for (j in this[0].indices)
+                if (this[i][j] == toSearch)
                     ret.add(i to j)
         return ret
     }
@@ -36,7 +36,7 @@ fun main() {
                     // find surrounding area that can be visited
                     directions.map { d -> it.first + d.first to it.second + d.second }
                         .filterNot { n -> (n.first < 0 || n.second < 0 || n.first >= grid.size || n.second >= grid[0].size || visited[n.first][n.second]) }
-                        .filterNot { n -> grid[n.first][n.second] - 1 > grid[it.first][it.second] }
+                        .filterNot { n -> grid[n.first][n.second] - 1 > grid[it.first][it.second] } // max height difference
                         .forEach { n -> tmp.add(n) }
                     if (tmp.contains(goal)) return steps
                 }
@@ -44,31 +44,25 @@ fun main() {
         }
     }
 
-    fun part1(input: List<String>): Int {
-        val grid = input.map { it.toCharArray() }
-
-        val goal = findMatching(grid, 'E').first()
-        grid[goal.first][goal.second] = 'z'
-
-        val start = findMatching(grid, 'S').first()
-        grid[start.first][start.second] = 'a'
-
-        return countMinSteps(mutableSetOf(start), grid, goal)
-    }
+    fun part1(input: List<String>): Int =
+        input.map { it.toCharArray() }.let {
+            val start = (it findMatching 'S').first()
+            it[start.first][start.second] = 'a' // to allow for easy ordering via Int value
+            val goal = (it findMatching 'E').first()
+            it[goal.first][goal.second] = 'z' // to allow for easy ordering via Int value
+            return countMinSteps(mutableSetOf(start), it, goal)
+        }
 
     // What is Big O?
     // https://i.redd.it/b9zi50qene5a1.png
-    fun part2(input: List<String>): Int {
-        val grid = input.map { it.toCharArray() }
-
-        val goal = findMatching(grid, 'E').first()
-        grid[goal.first][goal.second] = 'z'
-
-        val start = findMatching(grid, 'S').first()
-        grid[start.first][start.second] = 'a'
-
-        return countMinSteps(findMatching(grid, 'a').toMutableSet(), grid, goal)
-    }
+    fun part2(input: List<String>): Int =
+        input.map { it.toCharArray() }.let {
+            val start = (it findMatching 'S').first()
+            it[start.first][start.second] = 'a' // to allow for easy ordering via Int value
+            val goal = (it findMatching 'E').first()
+            it[goal.first][goal.second] = 'z' // to allow for easy ordering via Int value
+            return countMinSteps((it findMatching 'a').toMutableSet(), it, goal)
+        }
 
     val testInput = readTestFileByYearAndDay(2022, 12)
     check(part1(testInput) == 31)
