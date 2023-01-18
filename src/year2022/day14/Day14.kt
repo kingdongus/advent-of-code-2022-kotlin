@@ -9,10 +9,10 @@ import kotlin.math.min
 class Cave(val dimension: Point2D) {
 
     // we go cheap and model the field as characters, similar to the visualization on the page
-    var fieldState: Array<CharArray> = arrayOf(CharArray(1) { '.' })
-    var leftEdge = Int.MAX_VALUE
-    var rightEdge = -1
-    var bottomEdge = -1
+    private var fieldState: Array<CharArray> = arrayOf(CharArray(1) { '.' })
+    private var leftEdge = Int.MAX_VALUE
+    private var rightEdge = -1
+    private var bottomEdge = -1
 
     init {
         fieldState = Array(dimension.y) { CharArray(dimension.x) { '.' } }
@@ -73,27 +73,34 @@ fun main() {
         return rockLocations
     }
 
-    fun part1(input: List<String>): Int {
-        val rockLocations = parseRockLocations(input)
-        val cave = Cave(dimension = Point2D(rockLocations.maxOf { it.x } + 1, rockLocations.maxOf { it.y } + 1))
-        cave.addRocks(rockLocations)
-        var maxSand = 0
-        while (cave.addSand()) maxSand++
-        return maxSand
-    }
+    fun part1(input: List<String>): Int =
+        parseRockLocations(input).let {
+            val cave = Cave(dimension = Point2D(it.maxOf { it.x } + 1, it.maxOf { it.y } + 1))
+            cave.addRocks(it)
+            cave
+        }.let {
+            var maxSand = 0
+            while (it.addSand()) maxSand++
+            return maxSand
+        }
 
-    fun part2(input: List<String>): Int {
-        val rockLocations = parseRockLocations(input).toMutableList()
-        val depthFromReadings = rockLocations.maxOf { it.y }
-        // we manually add another layer of rocks slightly lower than whatever the reading tells us
-        // when the description says "infinite in both directions", it really meant the range 0..9999
-        rockLocations.addAll((0 until 1000).map { Point2D(it, depthFromReadings + 2) })
-        val cave = Cave(dimension = Point2D(rockLocations.maxOf { it.x } + 1, rockLocations.maxOf { it.y } + 1))
-        cave.addRocks(rockLocations)
-        var maxSand = 0
-        while (cave.addSand()) maxSand++
-        return maxSand + 1 // +1 since the code will not allow us to block the sand spawn point
-    }
+    fun part2(input: List<String>): Int =
+        parseRockLocations(input).toMutableList()
+            .also {
+                val depthFromReadings = it.maxOf { it.y }
+                // we manually add another layer of rocks slightly lower than whatever the reading tells us
+                // when the description says "infinite in both directions", it really meant the range 0..9999
+                it.addAll((0 until 1000).map { Point2D(it, depthFromReadings + 2) })
+            }
+            .let {
+                val cave = Cave(dimension = Point2D(it.maxOf { it.x } + 1, it.maxOf { it.y } + 1))
+                cave.addRocks(it)
+                cave
+            }.let {
+                var maxSand = 0
+                while (it.addSand()) maxSand++
+                return maxSand + 1// +1 since the code will not allow us to block the sand spawn point
+            }
 
     val testInput = readTestFileByYearAndDay(2022, 14)
 

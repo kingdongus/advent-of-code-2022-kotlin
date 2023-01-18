@@ -7,7 +7,7 @@ import java.lang.Integer.min
 
 data class Valve(val name: String, val flowRate: Int, val connections: MutableList<Valve> = mutableListOf()) {
 
-    val cost = mutableMapOf(this to 0)
+    private val cost = mutableMapOf(this to 0)
     fun findWayTo(other: Valve, seen: List<Valve> = listOf()): Int {
 
         if (connections.contains(other)) {
