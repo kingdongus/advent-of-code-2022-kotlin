@@ -58,7 +58,7 @@ fun main() {
             .map { it.first to it.second.map { name -> valves.first { valve -> valve.name == name.trim() } } }
             .forEach { it.first.connections.addAll(it.second) }
 
-        valves.forEach { valve -> valves.forEach { valve.findWayTo(it) } }
+        valves.forEach { valve -> valves.forEach(valve::findWayTo) }
         return valves
     }
 
